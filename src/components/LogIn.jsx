@@ -1,20 +1,62 @@
 import { useRef, useState } from "react"
 import Header from "./Header"
-import { checkValidData } from "../utils/vadidate"
+import { checkValidData } from "../utils/vadidate";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../utils/firebase";
+
 
 
 const LogIn = () => {
     const [isSignInForm, setIsSignInForm] = useState(true)
     const [errMessage, setErrMessage] = useState("")
 
-    const name = useRef(null)
+    // const name = useRef(null)
     const email = useRef(null);
     const password = useRef(null);
 
     const handleFormValidate = () => {
+        const message = checkValidData(email.current.value, password.current.value)
+        setErrMessage(message);
+        if (message) return;
 
-        const message = checkValidData(email.current.value, password.current.value, name.current.value)
-        setErrMessage(message)
+        if (!isSignInForm) {
+            //sign up logic
+            createUserWithEmailAndPassword(
+                auth,
+                email.current.value,
+                password.current.value
+            )
+                .then((userCredential) => {
+
+                    const user = userCredential.user;
+                    console.log(user)
+
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    setErrMessage(errorCode + " -" + errorMessage)
+                });
+
+
+        } else {
+            signInWithEmailAndPassword(
+                auth,
+                email.current.value,
+                password.current.value
+            )
+                .then((userCredential) => {
+                    // Signed in 
+                    const user = userCredential.user;
+                    console.log(user);
+
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    setErrMessage(errorCode + " -" + errorMessage)
+                });
+        }
 
     }
 
@@ -25,7 +67,7 @@ const LogIn = () => {
         <div>
             <Header />
             <div className="absolute">
-                <img className="bg-cover "
+                <img className="bg-cover w-full"
                     src="https://assets.nflxext.com/ffe/siteui/vlv3/6fd9d446-cd78-453a-8c9c-417ed3e00422/web/IN-en-20251117-TRIFECTA-perspective_2fe4e381-977f-49fd-a7f4-1da0bcf09429_small.jpg"
                     alt="bg-img" />
             </div>
@@ -35,7 +77,7 @@ const LogIn = () => {
                     {isSignInForm ? "Sign In" : "Sign Up"}
                 </h1>
                 {!isSignInForm && <input
-                    ref={name}
+
                     type="text"
                     placeholder="Enter Name"
                     className="p-4 my-4 w-full bg-gray-600" />}
