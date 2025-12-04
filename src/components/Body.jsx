@@ -1,15 +1,17 @@
-import { Provider } from "react-redux"
+
 import { Outlet } from "react-router-dom"
-import appStore from "../utils/appStore"
+import Header from "./Header"
+
+
 
 
 const Body = () => {
 
     return (
         <div>
-            <Provider store={appStore}>
-                <Outlet />
-            </Provider>
+            <Header />
+            <Outlet />
+
 
 
         </div>
