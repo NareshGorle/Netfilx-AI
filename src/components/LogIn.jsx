@@ -1,23 +1,24 @@
 import { useRef, useState } from "react"
 import Header from "./Header"
 import { checkValidData } from "../utils/vadidate";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "../utils/firebase";
-import { useNavigate } from "react-router-dom";
-
+import { useDispatch } from "react-redux";
+import { addUser } from "../utils/userSlice";
 
 
 const LogIn = () => {
-    const navigate = useNavigate();
+
+    const dispatch = useDispatch
     const [isSignInForm, setIsSignInForm] = useState(true)
     const [errMessage, setErrMessage] = useState("")
 
-    // const name = useRef(null)
+    const name = useRef(null)
     const email = useRef(null);
     const password = useRef(null);
 
     const handleFormValidate = () => {
-        const message = checkValidData(email.current.value, password.current.value)
+        const message = checkValidData(email?.current?.value, password?.current?.value, name?.current?.value)
         setErrMessage(message);
         if (message) return;
 
@@ -26,12 +27,35 @@ const LogIn = () => {
             createUserWithEmailAndPassword(
                 auth,
                 email.current.value,
-                password.current.value
+                password.current.value,
+                name.current.value
             )
                 .then((userCredential) => {
                     const user = userCredential.user;
-                    console.log(user)
-                    navigate("/browser")
+                    updateProfile(user, {
+                        displayName: name.current.value,
+                        photoURL: "https://instagram.fvga12-1.fna.fbcdn.net/v/t51.2885-19/573611821_18344832736204132_2637390128169313029_n.jpg?efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby4xMDgwLmMyIn0&_nc_ht=instagram.fvga12-1.fna.fbcdn.net&_nc_cat=104&_nc_oc=Q6cZ2QESPKl2I3ChLui47H_f5TkmbGGrswXrogKI90uJCMQsE67GE30tkJ8z8aZ4yzUtcBGSBC2EukstbdPuVij2u3jp&_nc_ohc=4BfKQqyviS8Q7kNvwE6XXJj&_nc_gid=UBtsGvP7evdAm2grAWek4g&edm=AP4sbd4BAAAA&ccb=7-5&oh=00_Afm6_3eIihVhVH3ttVY0dsAjoHrCtZW5sBfrny86X2EETg&oe=69386B7F&_nc_sid=7a9f4b"
+                    }).then(() => {
+                        // Profile updated!
+                        const { uid, email, displayName, photoURL } = auth.currentUser;
+                        dispatch(
+                            addUser({
+                                uid: uid,
+                                email: email,
+                                displayName: displayName,
+                                photoURL: photoURL
+                            })
+                        );
+
+                        //     navigate("/browser")
+                    }).catch((error) => {
+                        // An error occurred
+                        setErrMessage(error.message)
+                        console.log(error);
+
+                    });
+
+                    // navigate("/browser")
                 })
                 .catch((error) => {
                     const errorCode = error.code;
@@ -44,13 +68,14 @@ const LogIn = () => {
             signInWithEmailAndPassword(
                 auth,
                 email.current.value,
-                password.current.value
+                password.current.value,
+
             )
                 .then((userCredential) => {
                     // Signed in 
                     const user = userCredential.user;
                     console.log(user);
-                    navigate("/browser")
+                    // navigate("/browser")
 
 
                 })
@@ -68,7 +93,7 @@ const LogIn = () => {
     }
     return (
         <div>
-            <Header />
+
             <div className="absolute">
                 <img className="bg-cover w-full"
                     src="https://assets.nflxext.com/ffe/siteui/vlv3/6fd9d446-cd78-453a-8c9c-417ed3e00422/web/IN-en-20251117-TRIFECTA-perspective_2fe4e381-977f-49fd-a7f4-1da0bcf09429_small.jpg"
@@ -80,8 +105,8 @@ const LogIn = () => {
                     {isSignInForm ? "Sign In" : "Sign Up"}
                 </h1>
                 {!isSignInForm && <input
-
                     type="text"
+                    ref={name}
                     placeholder="Enter Name"
                     className="p-4 my-4 w-full bg-gray-600" />}
                 <input
