@@ -5,6 +5,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfi
 import { auth } from "../utils/firebase";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
+import { BACKGROUND } from "../utils/constants";
 
 
 const LogIn = () => {
@@ -43,7 +44,7 @@ const LogIn = () => {
                                 uid: uid,
                                 email: email,
                                 displayName: displayName,
-                                photoURL: photoURL
+                                photoURL: User
                             })
                         );
 
@@ -96,7 +97,7 @@ const LogIn = () => {
 
             <div className="absolute">
                 <img className="bg-cover w-full"
-                    src="https://assets.nflxext.com/ffe/siteui/vlv3/6fd9d446-cd78-453a-8c9c-417ed3e00422/web/IN-en-20251117-TRIFECTA-perspective_2fe4e381-977f-49fd-a7f4-1da0bcf09429_small.jpg"
+                    src={BACKGROUND}
                     alt="bg-img" />
             </div>
             <form onSubmit={(e) => e.preventDefault()}
