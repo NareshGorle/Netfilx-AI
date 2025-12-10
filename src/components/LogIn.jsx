@@ -5,7 +5,8 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfi
 import { auth } from "../utils/firebase";
 import { useDispatch } from "react-redux";
 import { addUser } from "../utils/userSlice";
-import { BACKGROUND } from "../utils/constants";
+import { BACKGROUND, userLogo } from "../utils/constants";
+
 
 
 const LogIn = () => {
@@ -44,7 +45,8 @@ const LogIn = () => {
                                 uid: uid,
                                 email: email,
                                 displayName: displayName,
-                                photoURL: User
+                                photoURL: photoURL
+
                             })
                         );
 
@@ -52,7 +54,8 @@ const LogIn = () => {
                     }).catch((error) => {
                         // An error occurred
                         setErrMessage(error.message)
-                        console.log(error);
+
+
 
                     });
 
