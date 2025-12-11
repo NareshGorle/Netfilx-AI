@@ -45,7 +45,7 @@ const LogIn = () => {
                                 uid: uid,
                                 email: email,
                                 displayName: displayName,
-                                photoURL: photoURL
+                                photoURL: userLogo
 
                             })
                         );
